@@ -68,3 +68,37 @@ export const getMyBusinesses = async (req: CustomRequest, res: Response): Promis
     res.status(500).json({ error: "Failed to fetch your businesses. Please try again later." });
   }
 };
+// Controller to delete a business (protected)
+export const deleteBusiness = async (req: CustomRequest, res: Response): Promise<void> => {
+  try {
+    const businessId = req.params.id; // Get the business ID from the request parameters
+    const userId = req.user?.id; // Get the authenticated user's ID
+
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized. Please log in." });
+      return;
+    }
+
+    // Find the business by ID
+    const business = await Business.findById(businessId);
+
+    if (!business) {
+      res.status(404).json({ error: "Business not found." });
+      return;
+    }
+
+    // Check if the authenticated user is the owner of the business
+    if (!business.owner || business.owner.toString() !== userId) {
+      res.status(403).json({ error: "You are not authorized to delete this business." });
+      return;
+    }
+
+    // Delete the business
+    await Business.findByIdAndDelete(businessId);
+
+    res.status(200).json({ message: "Business deleted successfully!" });
+  } catch (error) {
+    console.error("Error deleting business:", error);
+    res.status(500).json({ error: "Failed to delete business. Please try again later." });
+  }
+};

@@ -17,15 +17,19 @@ export function MyBusiness() {
   );
 
   // Mutation to delete a business
-  const deleteMutation = useMutation(deleteBusiness, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["myBusinesses"]); // Refresh business list
-    },
-  });
+  const deleteMutation = useMutation(
+    (id: string) => deleteBusiness(id, token!), // Pass token here
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["myBusinesses"]); // Refresh business list
+      },
+    }
+  );
+  
 
   // Handle business deletion
-  const handleDeleteBusiness = (id: string) => {
-    deleteMutation.mutate(id);
+  const handleDeleteBusiness = (_id: string) => {
+    deleteMutation.mutate(_id);
   };
 
   if (isLoading) {
@@ -53,7 +57,7 @@ export function MyBusiness() {
             <div className="flex gap-2 mt-2">
               <Button
                 variant="destructive"
-                onClick={() => handleDeleteBusiness(business.id)}
+                onClick={() => handleDeleteBusiness(business._id)}
                 disabled={deleteMutation.isLoading}
               >
                 {deleteMutation.isLoading ? "Deleting..." : "Delete"}

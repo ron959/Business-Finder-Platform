@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listBusinesses, createBusiness, getMyBusinesses } from "../controllers/businessController";
+import { listBusinesses, createBusiness, getMyBusinesses, deleteBusiness } from "../controllers/businessController";
 import { protect } from "../middlewares/authMiddleware";
 
 const router = Router();
@@ -12,5 +12,7 @@ router.post("/", protect, createBusiness);
 
 // Protected route to fetch user's businesses
 router.get("/mine", protect, getMyBusinesses);
+router.delete("/:id", protect, deleteBusiness); // Add this route
+
 
 export default router;

@@ -45,13 +45,16 @@ export const createBusiness = async (
 };
 
 
-// Delete a business
-export const deleteBusiness = async (id: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/${id}`, {
+export const deleteBusiness = async (id: string, token: string): Promise<void> => {
+  const response = await fetch(`http://localhost:3000/businesses/${id}`, {
     method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`, // Include token for authentication
+    },
   });
 
   if (!response.ok) {
-    throw new Error("Failed to delete business");
+    const error = await response.json();
+    throw new Error(error.message || "Failed to delete business.");
   }
 };
