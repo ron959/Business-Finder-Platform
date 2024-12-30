@@ -45,15 +45,12 @@ export function MyBusiness() {
 
       {/* List of Businesses */}
       <ul className="space-y-4">
-        {businesses?.map((business: any) => (
+        {[...(businesses || [])]?.reverse().map((business: any) => (
           <li key={business._id} className="border p-4 rounded-md">
             <h2 className="text-xl font-semibold">{business.name}</h2>
             <p>{business.description}</p>
             <p className="text-sm text-gray-500">Category: {business.category}</p>
             <div className="flex gap-2 mt-2">
-              <Button variant="outline" onClick={() => console.log("Edit business", business.id)}>
-                Edit
-              </Button>
               <Button
                 variant="destructive"
                 onClick={() => handleDeleteBusiness(business.id)}

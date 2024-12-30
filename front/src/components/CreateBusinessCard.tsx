@@ -40,13 +40,25 @@ const CreateBusinessCard = () => {
   const queryClient = useQueryClient();
   const { token } = useAuth(); // Get token from AuthContext
 
+  if (!token) {
+    console.error("Token is missing. Please log in.");
+    return null;
+  }
+
   // Mutation to create a business
   const createMutation = useMutation(
     (newBusiness: { name: string; description: string; category: string }) =>
       createBusiness(newBusiness, token), // Pass token to createBusiness
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["myBusinesses"]); // Refresh the business list
+      onSuccess: (newBusiness) => {
+        // Prepend the new business to the cached data
+        queryClient.setQueryData(["myBusinesses"], (oldData: any) => {
+          if (!oldData) return [newBusiness];
+          return [newBusiness, ...oldData];
+        });
+
+        // Optionally refetch to ensure data consistency
+        queryClient.invalidateQueries(["myBusinesses"]);
       },
       onError: (error) => {
         console.error("Failed to create business:", error);
@@ -65,6 +77,11 @@ const CreateBusinessCard = () => {
       description,
       category,
     });
+
+    // Clear inputs after submission
+    setName("");
+    setDescription("");
+    setCategory("");
   };
 
   return (
